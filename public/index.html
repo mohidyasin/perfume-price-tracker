@@ -10,7 +10,7 @@
     <header class="app-header">
       <div>
         <p class="eyebrow">Irish retailers only</p>
-        <h1>Men's Perfume Price Tracker</h1>
+        <h1>Perfume Price Tracker</h1>
       </div>
       <button id="catalogScanBtn" class="button primary" type="button">Scan retailers</button>
     </header>
@@ -56,6 +56,12 @@
         </div>
 
         <div class="catalog-filters" aria-label="Catalog filters">
+          <div class="field">
+            <label for="genderFilter">Gender</label>
+            <select id="genderFilter">
+              <option value="">All genders</option>
+            </select>
+          </div>
           <div class="field">
             <label for="brandFilter">Brand</label>
             <select id="brandFilter">
