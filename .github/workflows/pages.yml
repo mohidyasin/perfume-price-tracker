@@ -1,12 +1,7 @@
 name: Deploy perfume price tracker
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
-  schedule:
-    - cron: "17 6 * * *"
 
 permissions:
   contents: write
@@ -38,11 +33,14 @@ jobs:
       - name: Scrape catalog and update price history
         run: npm run update-history -- --site-limit=14 --pages=6 --items=80
 
+      - name: Export SQLite database
+        run: npm run export:sqlite
+
       - name: Commit updated catalog data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/catalog-latest.json data/price-history.json
+          git add data/catalog-latest.json data/price-history.json data/perfume-prices.sqlite
           if git diff --cached --quiet; then
             echo "No catalog data changes to commit."
           else
