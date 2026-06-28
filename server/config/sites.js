@@ -5,7 +5,10 @@ export const SITE_ALLOWLIST = [
     homepage: "https://www.mccauley.ie/",
     hosts: ["mccauley.ie", "www.mccauley.ie"],
     irishBased: true,
-    categoryUrls: ["https://www.mccauley.ie/fragrances/mens-fragrances"],
+    categoryUrls: [
+      "https://www.mccauley.ie/fragrances/mens-fragrances",
+      "https://www.mccauley.ie/fragrances/womens-fragrances"
+    ],
     notes: "Irish pharmacy retailer. Product pages expose price metadata."
   },
   {
@@ -23,7 +26,10 @@ export const SITE_ALLOWLIST = [
     homepage: "https://www.allcarepharmacy.ie/",
     hosts: ["allcarepharmacy.ie", "www.allcarepharmacy.ie"],
     irishBased: true,
-    categoryUrls: ["https://www.allcarepharmacy.ie/fragrances/mens-fragrances"],
+    categoryUrls: [
+      "https://www.allcarepharmacy.ie/fragrances/mens-fragrances",
+      "https://www.allcarepharmacy.ie/fragrances/womens-fragrances"
+    ],
     notes: "Irish pharmacy retailer with fragrance offers and men's fragrances."
   },
   {
@@ -41,7 +47,10 @@ export const SITE_ALLOWLIST = [
     homepage: "https://www.mccabespharmacy.com/",
     hosts: ["mccabespharmacy.com", "www.mccabespharmacy.com"],
     irishBased: true,
-    categoryUrls: ["https://www.mccabespharmacy.com/collections/fragrance-offers-for-him"],
+    categoryUrls: [
+      "https://www.mccabespharmacy.com/collections/fragrance-offers-for-him",
+      "https://www.mccabespharmacy.com/collections/christmas-gifts-all-gift-ideas-gift-ideas-by-type-fragrance-fragrance-for-her"
+    ],
     notes: "Irish pharmacy retailer; Shopify collection data is normalized."
   },
   {
@@ -50,7 +59,10 @@ export const SITE_ALLOWLIST = [
     homepage: "https://www.inishpharmacy.com/",
     hosts: ["inishpharmacy.com", "www.inishpharmacy.com"],
     irishBased: true,
-    categoryUrls: ["https://www.inishpharmacy.com/collections/fragrances-for-him"],
+    categoryUrls: [
+      "https://www.inishpharmacy.com/collections/fragrances-for-him",
+      "https://www.inishpharmacy.com/collections/fragrances-for-her"
+    ],
     notes: "Irish online pharmacy with men's fragrance collection pages."
   },
   {
@@ -59,7 +71,10 @@ export const SITE_ALLOWLIST = [
     homepage: "https://www.cloud10beauty.com/",
     hosts: ["cloud10beauty.com", "www.cloud10beauty.com"],
     irishBased: true,
-    categoryUrls: ["https://www.cloud10beauty.com/collections/fragrance-for-him"],
+    categoryUrls: [
+      "https://www.cloud10beauty.com/collections/fragrance-for-him",
+      "https://www.cloud10beauty.com/collections/fragrance-for-her"
+    ],
     notes: "Irish beauty retailer with a fragrance-for-him collection."
   },
   {
@@ -68,7 +83,10 @@ export const SITE_ALLOWLIST = [
     homepage: "https://leavys.ie/",
     hosts: ["leavys.ie", "www.leavys.ie"],
     irishBased: true,
-    categoryUrls: ["https://www.leavys.ie/category/fragrance-for-him"],
+    categoryUrls: [
+      "https://www.leavys.ie/category/fragrance-for-him",
+      "https://leavys.ie/category/fragrances-for-her"
+    ],
     notes: "Irish pharmacy retailer with a men's fragrance category."
   },
   {
@@ -77,7 +95,10 @@ export const SITE_ALLOWLIST = [
     homepage: "https://healthplus.ie/",
     hosts: ["healthplus.ie", "www.healthplus.ie"],
     irishBased: true,
-    categoryUrls: ["https://healthplus.ie/toiletries/mens-fragrances.html"],
+    categoryUrls: [
+      "https://healthplus.ie/toiletries/mens-fragrances.html",
+      "https://healthplus.ie/toiletries/womens-fragrances.html"
+    ],
     notes: "Irish pharmacy retailer using Magento-style category pages."
   },
   {
@@ -86,7 +107,11 @@ export const SITE_ALLOWLIST = [
     homepage: "https://www.rochfordspharmacy.ie/",
     hosts: ["rochfordspharmacy.ie", "www.rochfordspharmacy.ie"],
     irishBased: true,
-    categoryUrls: ["https://www.rochfordspharmacy.ie/c/mens-fragrance/76"],
+    categoryUrls: [
+      "https://www.rochfordspharmacy.ie/c/mens-fragrance/76",
+      "https://www.rochfordspharmacy.ie/c/womens-fragrance/75",
+      "https://www.rochfordspharmacy.ie/c/womens-fragrance/77"
+    ],
     notes: "Irish pharmacy and beauty retailer using /p/ product URLs."
   },
   {
@@ -95,7 +120,10 @@ export const SITE_ALLOWLIST = [
     homepage: "https://www.universitypharmacy.ie/",
     hosts: ["universitypharmacy.ie", "www.universitypharmacy.ie"],
     irishBased: true,
-    categoryUrls: ["https://www.universitypharmacy.ie/c/fragrance-for-him/73"],
+    categoryUrls: [
+      "https://www.universitypharmacy.ie/c/fragrance-for-him/73",
+      "https://www.universitypharmacy.ie/c/fragrance-for-her/74"
+    ],
     notes: "Irish Galway pharmacy with fragrance-for-him product pages."
   },
   {
@@ -104,7 +132,10 @@ export const SITE_ALLOWLIST = [
     homepage: "https://www.alwaystherepharmacy.ie/",
     hosts: ["alwaystherepharmacy.ie", "www.alwaystherepharmacy.ie"],
     irishBased: true,
-    categoryUrls: ["https://www.alwaystherepharmacy.ie/c/mens-fragrance/121"],
+    categoryUrls: [
+      "https://www.alwaystherepharmacy.ie/c/mens-fragrance/121",
+      "https://www.alwaystherepharmacy.ie/c/womens-fragrance/120"
+    ],
     notes: "Irish pharmacy with men's fragrance product pages."
   },
   {
@@ -122,7 +153,10 @@ export const SITE_ALLOWLIST = [
     homepage: "https://www.arnotts.ie/",
     hosts: ["arnotts.ie", "www.arnotts.ie"],
     irishBased: true,
-    categoryUrls: ["https://www.arnotts.ie/beauty/fragrance/mens-fragrances/"],
+    categoryUrls: [
+      "https://www.arnotts.ie/beauty/fragrance/mens-fragrances/",
+      "https://www.arnotts.ie/beauty/fragrance/womens-fragrances/"
+    ],
     notes: "Irish department store with men's fragrance category pages."
   },
   {
