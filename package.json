@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "A local Irish men's perfume price tracker with retailer scraping.",
+  "description": "An Irish perfume price tracker with retailer scraping, daily history, and SQLite export.",
   "scripts": {
     "start": "node server/index.js",
     "test": "node --test",
     "scrape": "node server/cli/scrape-url.js",
     "catalog": "node server/cli/scrape-catalog.js",
     "update-history": "node server/cli/update-catalog-history.js",
+    "export:sqlite": "node server/cli/export-sqlite.js",
     "build:pages": "node server/cli/build-pages.js",
     "preview:pages": "node server/cli/preview-pages.js",
     "publish:github": "node server/cli/publish-github.js"
