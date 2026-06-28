@@ -5,6 +5,7 @@ const state = {
   selectedProductKey: "",
   catalogSearch: "",
   filters: {
+    audience: "",
     brand: "",
     size: "",
     type: ""
@@ -19,6 +20,7 @@ const elements = {
   catalogOffers: document.querySelector("#catalogOffers"),
   catalogGaps: document.querySelector("#catalogGaps"),
   catalogSearch: document.querySelector("#catalogSearch"),
+  genderFilter: document.querySelector("#genderFilter"),
   brandFilter: document.querySelector("#brandFilter"),
   sizeFilter: document.querySelector("#sizeFilter"),
   typeFilter: document.querySelector("#typeFilter"),
@@ -67,6 +69,11 @@ function wireEvents() {
     applyCatalogFilters();
   });
 
+  elements.genderFilter.addEventListener("change", () => {
+    state.filters.audience = elements.genderFilter.value;
+    applyCatalogFilters();
+  });
+
   elements.brandFilter.addEventListener("change", () => {
     state.filters.brand = elements.brandFilter.value;
     applyCatalogFilters();
@@ -84,8 +91,9 @@ function wireEvents() {
 
   elements.clearFiltersBtn.addEventListener("click", () => {
     state.catalogSearch = "";
-    state.filters = { brand: "", size: "", type: "" };
+    state.filters = { audience: "", brand: "", size: "", type: "" };
     elements.catalogSearch.value = "";
+    elements.genderFilter.value = "";
     elements.brandFilter.value = "";
     elements.sizeFilter.value = "";
     elements.typeFilter.value = "";
@@ -139,6 +147,7 @@ function renderCatalog(report) {
 function getVisiblePerfumes() {
   const perfumes = state.catalog?.perfumes || [];
   return perfumes.filter((perfume) => {
+    if (state.filters.audience && audienceFilterValue(perfume) !== state.filters.audience) return false;
     if (state.filters.brand && brandFilterValue(perfume) !== state.filters.brand) return false;
     if (state.filters.size && sizeFilterValue(perfume) !== state.filters.size) return false;
     if (state.filters.type && typeFilterValue(perfume) !== state.filters.type) return false;
@@ -147,6 +156,7 @@ function getVisiblePerfumes() {
     const haystack = [
       perfume.title,
       perfume.brand,
+      audienceFilterLabel(audienceFilterValue(perfume)),
       formatProductFormat(perfume.productFormat),
       perfume.productFormat,
       perfume.volumeMl ? `${perfume.volumeMl}ml` : "",
@@ -187,6 +197,7 @@ function renderPerfumeList() {
     const meta = document.createElement("div");
     meta.className = "catalog-meta";
     meta.textContent = [
+      audienceFilterLabel(audienceFilterValue(perfume)),
       perfume.brand || "Brand unknown",
       formatSize(perfume.volumeMl),
       formatProductFormat(perfume.productFormat),
@@ -229,6 +240,7 @@ function renderSelectedPerfume() {
 
   const selectedMeta = document.createElement("span");
   selectedMeta.textContent = [
+    audienceFilterLabel(audienceFilterValue(perfume)),
     perfume.brand || "Brand unknown",
     formatSize(perfume.volumeMl),
     formatProductFormat(perfume.productFormat),
@@ -241,7 +253,7 @@ function renderSelectedPerfume() {
 
   const identity = document.createElement("section");
   identity.className = "identity-strip";
-  for (const value of [perfume.brand || "Brand unknown", formatSize(perfume.volumeMl), formatProductFormat(perfume.productFormat)]) {
+  for (const value of [audienceFilterLabel(audienceFilterValue(perfume)), perfume.brand || "Brand unknown", formatSize(perfume.volumeMl), formatProductFormat(perfume.productFormat)]) {
     const pill = document.createElement("span");
     pill.textContent = value;
     identity.append(pill);
@@ -526,6 +538,12 @@ function applyCatalogFilters() {
 function renderCatalogFilterOptions() {
   const perfumes = state.catalog?.perfumes || [];
 
+  setSelectOptions(elements.genderFilter, [
+    { value: "", label: "All genders" },
+    ...countOptions(perfumes, audienceFilterValue, audienceFilterLabel)
+      .sort((a, b) => audienceSortValue(a.value) - audienceSortValue(b.value) || a.label.localeCompare(b.label))
+  ], state.filters.audience);
+
   setSelectOptions(elements.brandFilter, [
     { value: "", label: "All brands" },
     ...countOptions(perfumes, brandFilterValue, brandFilterLabel)
@@ -544,6 +562,7 @@ function renderCatalogFilterOptions() {
       .sort((a, b) => typeSortValue(a.value) - typeSortValue(b.value) || a.label.localeCompare(b.label))
   ], state.filters.type);
 
+  state.filters.audience = elements.genderFilter.value;
   state.filters.brand = elements.brandFilter.value;
   state.filters.size = elements.sizeFilter.value;
   state.filters.type = elements.typeFilter.value;
@@ -574,6 +593,26 @@ function countOptions(items, valueFor, labelFor) {
     value,
     label: `${labelFor(value)} (${count})`
   }));
+}
+
+function audienceFilterValue(perfume) {
+  return perfume.audience || "unknown";
+}
+
+function audienceFilterLabel(value) {
+  const labels = {
+    men: "Men",
+    women: "Women",
+    unisex: "Unisex",
+    unknown: "Gender unknown"
+  };
+  return labels[value] || "Gender unknown";
+}
+
+function audienceSortValue(value) {
+  const order = ["men", "women", "unisex", "unknown"];
+  const index = order.indexOf(value);
+  return index === -1 ? order.length : index;
 }
 
 function brandFilterValue(perfume) {
