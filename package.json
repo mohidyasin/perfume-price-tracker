@@ -1,0 +1,20 @@
+{
+  "name": "irish-perfume-price-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A local Irish men's perfume price tracker with retailer scraping.",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test",
+    "scrape": "node server/cli/scrape-url.js",
+    "catalog": "node server/cli/scrape-catalog.js",
+    "update-history": "node server/cli/update-catalog-history.js",
+    "build:pages": "node server/cli/build-pages.js",
+    "preview:pages": "node server/cli/preview-pages.js",
+    "publish:github": "node server/cli/publish-github.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
