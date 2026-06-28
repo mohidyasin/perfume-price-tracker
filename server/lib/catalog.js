@@ -44,7 +44,8 @@ const BRAND_ALIASES = [
   ["verset", "Verset"]
 ];
 
-const NOISE_TERMS_RE = /\b(save|worth|free gift|with purchase|spray|natural spray|vaporisateur|refillable bottle|refill|for him|for men|mens|men's|male|all sizes|various sizes|default title)\b/gi;
+const NOISE_TERMS_RE = /\b(save|worth|free gift|with purchase|spray|natural spray|vaporisateur|refillable bottle|refill|for him|for men|mens|men's|male|for her|women|women's|womens|female|ladies|all sizes|various sizes|default title)\b/gi;
+const AUDIENCE_VALUES = ["men", "women", "unisex", "unknown"];
 
 export async function scrapeCatalog(options = {}) {
   const runId = options.runId || new Date().toISOString().replace(/[:.]/g, "-");
@@ -73,11 +74,15 @@ export async function scrapeCatalog(options = {}) {
     };
 
     const seenPages = new Set();
-    const queuedPages = [...site.categoryUrls];
+    const queuedPages = site.categoryUrls.map((url) => ({
+      url,
+      audience: inferAudience(url) || "unknown"
+    }));
     const seenItems = new Set();
 
     while (queuedPages.length && siteReport.pagesScraped < maxPagesPerSite) {
-      const pageUrl = queuedPages.shift();
+      const page = queuedPages.shift();
+      const pageUrl = page.url;
       const canonicalPageUrl = canonicalizeUrl(pageUrl);
       if (seenPages.has(canonicalPageUrl)) continue;
       seenPages.add(canonicalPageUrl);
@@ -90,7 +95,13 @@ export async function scrapeCatalog(options = {}) {
         siteReport.pagesScraped += 1;
 
         for (const rawItem of result.items) {
-          const normalized = normalizeCatalogItem(rawItem, { runId, scrapedAt: result.fetchedAt, site });
+          const normalized = normalizeCatalogItem(rawItem, {
+            runId,
+            scrapedAt: result.fetchedAt,
+            site,
+            audience: page.audience,
+            sourceCategoryUrl: canonicalPageUrl
+          });
           const itemKey = `${normalized.siteKey}|${normalized.canonicalUrl}|${normalized.volumeMl || ""}|${normalized.price.current}`;
           if (seenItems.has(itemKey)) continue;
           seenItems.add(itemKey);
@@ -99,7 +110,10 @@ export async function scrapeCatalog(options = {}) {
 
         for (const nextUrl of result.paginationUrls || []) {
           if (!seenPages.has(nextUrl) && queuedPages.length < maxPagesPerSite * 3) {
-            queuedPages.push(nextUrl);
+            queuedPages.push({
+              url: nextUrl,
+              audience: page.audience
+            });
           }
         }
       } catch (error) {
@@ -143,6 +157,7 @@ export function normalizeCatalogItem(rawItem, context = {}) {
   const pricePer100ml = currentPrice && volumeMl ? roundMoney((currentPrice / volumeMl) * 100) : null;
   const productKey = buildProductKey({ brand, normalizedName, productFormat, volumeMl });
   const image = normalizeImageUrl(rawItem.image, canonicalUrl);
+  const audience = resolveAudience(rawItem, context, identityText);
 
   return {
     schemaVersion: 1,
@@ -162,7 +177,8 @@ export function normalizeCatalogItem(rawItem, context = {}) {
     productKey,
     volumeMl,
     productFormat,
-    category: "mens-fragrance",
+    audience,
+    category: categoryForAudience(audience),
     price: {
       current: currentPrice,
       list: listPrice,
@@ -180,6 +196,7 @@ export function normalizeCatalogItem(rawItem, context = {}) {
 export function buildCatalogReport({ runId, startedAt, finishedAt, sites, siteReports, items }) {
   const groups = groupComparableItems(items);
   const perfumes = buildPerfumeGroups(groups);
+  const audienceCounts = countBy(perfumes, (perfume) => perfume.audience || "unknown");
   const discrepancies = perfumes
     .filter((group) => group.offerCount >= 2 && group.bestPrice != null && group.highestPrice > group.bestPrice)
     .map((group) => ({
@@ -188,6 +205,7 @@ export function buildCatalogReport({ runId, startedAt, finishedAt, sites, siteRe
       brand: group.brand,
       volumeMl: group.volumeMl,
       productFormat: group.productFormat,
+      audience: group.audience,
       offerCount: group.offerCount,
       bestPrice: group.bestPrice,
       highestPrice: group.highestPrice,
@@ -232,7 +250,8 @@ export function buildCatalogReport({ runId, startedAt, finishedAt, sites, siteRe
         "body-spray",
         "gift-set",
         "format-unknown"
-      ]
+      ],
+      audienceValues: AUDIENCE_VALUES
     },
     summary: {
       sitesRequested: sites.length,
@@ -243,7 +262,8 @@ export function buildCatalogReport({ runId, startedAt, finishedAt, sites, siteRe
       distinctProductKeys: groups.size,
       consolidatedPerfumes: perfumes.length,
       comparableGroups: discrepancies.length,
-      saleDeals: saleDeals.length
+      saleDeals: saleDeals.length,
+      audienceCounts
     },
     sites: siteReports,
     perfumes,
@@ -265,7 +285,8 @@ export async function readLatestCatalog() {
         standardization: {
           groupKeyParts: ["brand", "normalizedName", "productFormat", "volumeMl"],
           sizeUnit: "ml",
-          formatValues: []
+          formatValues: [],
+          audienceValues: AUDIENCE_VALUES
         },
         summary: {
           sitesRequested: 0,
@@ -276,7 +297,8 @@ export async function readLatestCatalog() {
           distinctProductKeys: 0,
           consolidatedPerfumes: 0,
           comparableGroups: 0,
-          saleDeals: 0
+          saleDeals: 0,
+          audienceCounts: {}
         },
         sites: [],
         perfumes: [],
@@ -305,6 +327,7 @@ function groupComparableItems(items) {
       brand: item.brand,
       volumeMl: item.volumeMl,
       productFormat: item.productFormat,
+      audience: item.audience || "unknown",
       minPrice: null,
       maxPrice: null,
       items: []
@@ -312,6 +335,7 @@ function groupComparableItems(items) {
 
     existing.items.push(item);
     existing.items = dedupeGroupItems(existing.items);
+    existing.audience = summarizeAudience(existing.items.map((entry) => entry.audience));
     const prices = existing.items.map((entry) => entry.price.current).filter((price) => price != null);
     existing.minPrice = prices.length ? Math.min(...prices) : null;
     existing.maxPrice = prices.length ? Math.max(...prices) : null;
@@ -332,6 +356,7 @@ function buildPerfumeGroups(groups) {
           siteName: item.siteName,
           productUrl: item.productUrl,
           title: item.title,
+          audience: item.audience || "unknown",
           image: item.image,
           price: item.price.current,
           priceText: item.price.text,
@@ -355,6 +380,7 @@ function buildPerfumeGroups(groups) {
         normalizedName: group.items[0]?.normalizedName || "",
         volumeMl: group.volumeMl,
         productFormat: group.productFormat,
+        audience: group.audience || summarizeAudience(group.items.map((item) => item.audience)),
         image: bestOffer?.image || group.items.find((item) => item.image)?.image || "",
         offerCount: offers.length,
         retailerCount: new Set(offers.map((offer) => offer.siteKey)).size,
@@ -436,6 +462,59 @@ function buildProductKey({ brand, normalizedName, productFormat, volumeMl }) {
   const formatPart = slugify(productFormat || "format-unknown");
   const volumePart = volumeMl ? `${volumeMl}ml` : "size-unknown";
   return `${brandPart}:${namePart}:${formatPart}:${volumePart}`;
+}
+
+function resolveAudience(rawItem, context, identityText) {
+  const explicit = normalizeAudience(rawItem.audience);
+  if (explicit) return explicit;
+
+  const productAudience = inferAudience(identityText);
+  if (productAudience) return productAudience;
+
+  const sourceAudience = normalizeAudience(context.audience) || inferAudience(context.sourceCategoryUrl);
+  return sourceAudience || "unknown";
+}
+
+function inferAudience(value) {
+  const text = asciiFold(decodeURIComponentSafe(value)).toLowerCase();
+  if (/\b(unisex|everyone|all genders|all-gender|gender neutral|gender-neutral)\b/.test(text)) return "unisex";
+  if (/\b(for her|for-her|pour femme|femme|women|women's|womens|female|ladies|fragrance-for-her|fragrances-for-her|womens-fragrance|womens-fragrances)\b/.test(text)) return "women";
+  if (/\b(for him|for-him|for men|for-men|pour homme|homme|men|men's|mens|male|fragrance-for-him|fragrances-for-him|mens-fragrance|mens-fragrances)\b/.test(text)) return "men";
+  return "";
+}
+
+function normalizeAudience(value) {
+  const text = String(value || "").trim().toLowerCase();
+  if (["men", "male", "mens", "men's"].includes(text)) return "men";
+  if (["women", "female", "womens", "women's", "ladies"].includes(text)) return "women";
+  if (["unisex", "everyone", "all"].includes(text)) return "unisex";
+  return "";
+}
+
+function summarizeAudience(values) {
+  const known = new Set(values.map((value) => normalizeAudience(value)).filter(Boolean));
+  known.delete("unknown");
+  if (known.has("unisex") || (known.has("men") && known.has("women"))) return "unisex";
+  if (known.has("men")) return "men";
+  if (known.has("women")) return "women";
+  return "unknown";
+}
+
+function categoryForAudience(audience) {
+  const normalized = normalizeAudience(audience) || "unknown";
+  if (normalized === "men") return "mens-fragrance";
+  if (normalized === "women") return "womens-fragrance";
+  if (normalized === "unisex") return "unisex-fragrance";
+  return "fragrance";
+}
+
+function countBy(items, valueFor) {
+  const counts = {};
+  for (const item of items) {
+    const value = valueFor(item) || "unknown";
+    counts[value] = (counts[value] || 0) + 1;
+  }
+  return counts;
 }
 
 function inferBrandFromName(name) {
@@ -535,6 +614,14 @@ function asciiFold(value) {
   return String(value || "")
     .normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function decodeURIComponentSafe(value) {
+  try {
+    return decodeURIComponent(String(value || ""));
+  } catch {
+    return String(value || "");
+  }
 }
 
 function titleCase(value) {
