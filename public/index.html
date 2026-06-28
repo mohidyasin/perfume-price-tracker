@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Irish Perfume Price Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Irish retailers only</p>
+        <h1>Men's Perfume Price Tracker</h1>
+      </div>
+      <button id="catalogScanBtn" class="button primary" type="button">Scan retailers</button>
+    </header>
+
+    <main class="app-shell">
+      <section id="message" class="message" role="status" aria-live="polite"></section>
+
+      <section class="catalog-panel" aria-label="Unified catalog">
+        <div class="catalog-heading">
+          <div>
+            <p class="eyebrow">Unified catalog</p>
+            <h2>Consolidated Perfume Prices</h2>
+          </div>
+        </div>
+
+        <div class="catalog-stats">
+          <div>
+            <span>Retailers</span>
+            <strong id="catalogSites">0</strong>
+          </div>
+          <div>
+            <span>Perfumes</span>
+            <strong id="catalogProducts">0</strong>
+          </div>
+          <div>
+            <span>Offers</span>
+            <strong id="catalogOffers">0</strong>
+          </div>
+          <div>
+            <span>Price gaps</span>
+            <strong id="catalogGaps">0</strong>
+          </div>
+        </div>
+
+        <div class="standard-note">
+          <strong>Matched by size and concentration.</strong>
+          <span>50ml and 100ml are separate. Eau de parfum, eau de toilette, parfum, aftershave, cologne, and gift sets are separate.</span>
+        </div>
+
+        <div class="field catalog-search">
+          <label for="catalogSearch">Search perfume</label>
+          <input id="catalogSearch" type="search" placeholder="Search by brand, perfume, size, concentration, or retailer" />
+        </div>
+
+        <div class="catalog-filters" aria-label="Catalog filters">
+          <div class="field">
+            <label for="brandFilter">Brand</label>
+            <select id="brandFilter">
+              <option value="">All brands</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sizeFilter">Size</label>
+            <select id="sizeFilter">
+              <option value="">All sizes</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="typeFilter">Type</label>
+            <select id="typeFilter">
+              <option value="">All types</option>
+            </select>
+          </div>
+          <button id="clearFiltersBtn" class="button ghost" type="button">Clear</button>
+        </div>
+
+        <div class="catalog-columns">
+          <section>
+            <h3>Perfumes <span id="catalogResultCount"></span></h3>
+            <div id="perfumeList" class="perfume-list"></div>
+          </section>
+          <section>
+            <h3 id="selectedPerfumeTitle">Retailer Prices</h3>
+            <div id="retailerPrices" class="retailer-prices"></div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>
