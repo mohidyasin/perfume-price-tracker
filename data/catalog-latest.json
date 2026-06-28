@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "runId": "seed",
+  "startedAt": "2026-06-28T00:00:00.000Z",
+  "finishedAt": "2026-06-28T00:00:00.000Z",
+  "standardization": {
+    "groupKeyParts": [
+      "brand",
+      "normalizedName",
+      "productFormat",
+      "volumeMl"
+    ],
+    "sizeUnit": "ml",
+    "formatValues": [
+      "eau-de-parfum",
+      "eau-de-toilette",
+      "parfum",
+      "aftershave",
+      "cologne",
+      "deodorant",
+      "body-spray",
+      "gift-set",
+      "format-unknown"
+    ]
+  },
+  "summary": {
+    "sitesRequested": 0,
+    "sitesSucceeded": 0,
+    "sitesFailed": 0,
+    "pagesScraped": 0,
+    "productsFound": 0,
+    "distinctProductKeys": 0,
+    "consolidatedPerfumes": 0,
+    "comparableGroups": 0,
+    "saleDeals": 0
+  },
+  "sites": [],
+  "perfumes": [],
+  "items": [],
+  "discrepancies": [],
+  "saleDeals": []
+}
