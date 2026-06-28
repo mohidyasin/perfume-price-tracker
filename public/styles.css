@@ -285,7 +285,7 @@ select:focus {
 
 .catalog-filters {
   display: grid;
-  grid-template-columns: minmax(170px, 1fr) minmax(130px, 0.72fr) minmax(150px, 0.8fr) auto;
+  grid-template-columns: minmax(130px, 0.7fr) minmax(170px, 1fr) minmax(120px, 0.65fr) minmax(140px, 0.75fr) auto;
   gap: 10px;
   align-items: end;
   margin-top: 12px;
