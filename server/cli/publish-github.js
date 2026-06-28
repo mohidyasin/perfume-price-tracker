@@ -57,7 +57,7 @@ async function ensureRepository({ owner, repo, userLogin, isPrivate }) {
 
   const payload = {
     name: repo,
-    description: "Irish men's perfume price tracker with daily retailer scraping and price history.",
+    description: "Irish perfume price tracker with daily retailer scraping, price history, and SQLite export.",
     private: isPrivate,
     has_issues: true,
     auto_init: true
