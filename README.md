@@ -1,13 +1,13 @@
 # Irish Perfume Price Tracker
 
-A local web app for comparing men's perfume prices from allowlisted Irish retailers in one consolidated catalog view.
+A local web app for comparing perfume prices from allowlisted Irish retailers in one consolidated catalog view.
 
 ## What it does
 
-- Runs a 10+ Irish-site catalog scan into one normalized JSON format.
+- Runs a 10+ Irish-site catalog scan into one normalized catalog.
 - Groups matching perfumes so one perfume view shows every retailer price together.
 - Shows scraped perfume bottle thumbnails in the catalog and retailer comparison rows when retailer pages provide images.
-- Filters the catalog by brand, bottle size, and type/concentration such as EDP or EDT.
+- Filters the catalog by gender, brand, bottle size, and type/concentration such as EDP or EDT.
 - Highlights best-price offers and cross-site price discrepancies inside each consolidated perfume group.
 - Standardizes size to millilitres and keeps different sizes separate.
 - Keeps perfume concentration/type separate, including eau de parfum, eau de toilette, parfum, aftershave, cologne, deodorant, body spray, and gift sets.
@@ -31,6 +31,7 @@ This project is ready to run as a static GitHub Pages app. The hosted version re
 ```text
 data/catalog-latest.json
 data/price-history.json
+data/perfume-prices.sqlite
 ```
 
 The included GitHub Actions workflow at `.github/workflows/pages.yml`:
@@ -39,6 +40,7 @@ The included GitHub Actions workflow at `.github/workflows/pages.yml`:
 - scrapes the Irish retailer catalog daily at `06:17 UTC`,
 - updates `data/catalog-latest.json`,
 - appends retailer price points to `data/price-history.json`,
+- exports a SQLite database snapshot to `data/perfume-prices.sqlite`,
 - commits those data changes back to the repository,
 - builds `dist/`,
 - deploys the app to GitHub Pages.
@@ -101,6 +103,12 @@ Run the daily-tracking command locally:
 npm run update-history -- --site-limit=14 --pages=6 --items=80
 ```
 
+Export the latest JSON data into the SQLite database:
+
+```powershell
+npm run export:sqlite
+```
+
 The latest normalized output is saved to:
 
 ```text
@@ -112,6 +120,14 @@ The graph data is saved to:
 ```text
 data/price-history.json
 ```
+
+The SQLite database snapshot is saved to:
+
+```text
+data/perfume-prices.sqlite
+```
+
+The hosted static app reads the JSON files so it can run on GitHub Pages without a backend server. The workflow also stores the same scrape in SQLite tables (`runs`, `perfumes`, `offers`, and `price_points`) so the received data is available as a real database snapshot.
 
 The report keeps raw normalized offers in `items`, but the dashboard primarily uses `perfumes`. Each `perfumes[]` entry is one consolidated perfume with `productKey`, `title`, `brand`, `volumeMl`, `productFormat`, `image`, `bestPrice`, `highestPrice`, `spread`, and an `offers[]` array sorted by retailer price.
 
@@ -125,7 +141,7 @@ That means `50ml` and `100ml` are not merged, and eau de parfum and eau de toile
 
 Each `offers[]` row includes `siteName`, `productUrl`, `title`, `image`, `price`, `priceText`, `pricePer100ml`, `discountPct`, `source`, and `confidence`.
 
-`price-history.json` keeps dated price points by normalized perfume and retailer, so each perfume can show a retailer-by-retailer price graph over time.
+`price-history.json` keeps dated price points by normalized perfume and retailer, so each perfume can show a retailer-by-retailer price graph over time. The daily workflow updates existing perfumes by `productKey` and adds new `productKey` records when retailers add new perfumes.
 
 ## Allowed retailer storefronts
 
