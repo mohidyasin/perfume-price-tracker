@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "products": [
+    {
+      "id": "1350ce350ae80b",
+      "url": "https://www.theperfumeshop.com/ie/hugo-boss/boss-bottled-night/eau-de-toilette-spray/p/75290EDTJU?varSel=1135805",
+      "finalUrl": "https://www.theperfumeshop.com/ie/hugo-boss/boss-bottled-night/eau-de-toilette-spray/p/75290EDTJU?varSel=1135805",
+      "siteKey": "the-perfume-shop-ie",
+      "siteName": "The Perfume Shop Ireland",
+      "name": "HUGO BOSS Boss Bottled Night Eau de Toilette Spray 200ML",
+      "brand": "HUGO BOSS",
+      "image": "https://media.theperfumeshop.com/medias/sys_master/prd-images/hfa/h7e/10434521169950/prd-front-1135805_47x47/hugo-boss-boss-bottled-night-eau-de-toilette-spray-47x47.jpg",
+      "currentPrice": 124,
+      "priceText": "€124.00",
+      "currency": "EUR",
+      "targetPrice": null,
+      "notes": "",
+      "createdAt": "2026-06-28T12:40:17.743Z",
+      "lastChecked": "2026-06-28T12:42:11.180Z",
+      "lastError": "",
+      "scrapeSource": "json-ld",
+      "confidence": 0.96,
+      "lowestSeen": 124,
+      "highestSeen": 124,
+      "history": [
+        {
+          "checkedAt": "2026-06-28T12:40:17.743Z",
+          "price": 124,
+          "priceText": "€124.00",
+          "currency": "EUR",
+          "source": "json-ld",
+          "confidence": 0.96
+        },
+        {
+          "checkedAt": "2026-06-28T12:42:11.180Z",
+          "price": 124,
+          "priceText": "€124.00",
+          "currency": "EUR",
+          "source": "json-ld",
+          "confidence": 0.96
+        }
+      ]
+    }
+  ]
+}
