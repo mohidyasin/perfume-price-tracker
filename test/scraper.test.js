@@ -14,12 +14,17 @@ import {
 test("allowlist has at least 10 Irish-based scan sources with category URLs", () => {
   const sites = [
     "https://www.mccauley.ie/fragrances/mens-fragrances",
+    "https://www.mccauley.ie/fragrances/womens-fragrances",
     "https://www.hickeyspharmacies.ie/toiletries/mens/fragrance",
     "https://www.allcarepharmacy.ie/fragrances/mens-fragrances",
+    "https://www.allcarepharmacy.ie/fragrances/womens-fragrances",
     "https://www.meagherspharmacy.ie/collections/mens-fragrance",
     "https://www.mccabespharmacy.com/collections/fragrance-offers-for-him",
+    "https://www.mccabespharmacy.com/collections/christmas-gifts-all-gift-ideas-gift-ideas-by-type-fragrance-fragrance-for-her",
     "https://www.inishpharmacy.com/collections/fragrances-for-him",
+    "https://www.inishpharmacy.com/collections/fragrances-for-her",
     "https://www.cloud10beauty.com/collections/fragrance-for-him",
+    "https://www.cloud10beauty.com/collections/fragrance-for-her",
     "https://www.leavys.ie/category/fragrance-for-him",
     "https://healthplus.ie/toiletries/mens-fragrances.html",
     "https://www.rochfordspharmacy.ie/c/mens-fragrance/76"
@@ -140,7 +145,7 @@ test("catalog normalization groups comparable products and reports price gaps", 
     price: 49.95,
     currency: "EUR",
     image: "/media/hugo-boss-orange.jpg"
-  }, { site, runId: "test" });
+  }, { site, runId: "test", sourceCategoryUrl: "https://www.mccauley.ie/fragrances/mens-fragrances" });
   const high = normalizeCatalogItem({
     url: "https://www.hickeyspharmacies.ie/hugo-boss-orange-man-edt-100ml.html",
     siteKey: "hickeys",
@@ -213,6 +218,50 @@ test("catalog grouping keeps different sizes and parfum/toilette separate", () =
   assert.equal(new Set(report.perfumes.map((item) => item.productFormat)).size, 2);
 });
 
+test("catalog records men and women audience for filtering", () => {
+  const mccauley = getAllowedSite("https://www.mccauley.ie/");
+  const allcare = getAllowedSite("https://www.allcarepharmacy.ie/");
+  const men = normalizeCatalogItem({
+    url: "https://www.mccauley.ie/burberry-hero-for-him-eau-de-parfum-50ml",
+    siteKey: "mccauley",
+    siteName: "McCauley Pharmacy",
+    name: "Burberry Hero For Him Eau De Parfum 50ml",
+    price: 88.2,
+    currency: "EUR"
+  }, {
+    site: mccauley,
+    runId: "test",
+    sourceCategoryUrl: "https://www.mccauley.ie/fragrances/mens-fragrances"
+  });
+  const women = normalizeCatalogItem({
+    url: "https://www.allcarepharmacy.ie/chanel-chance-eau-de-parfum-50ml",
+    siteKey: "allcare",
+    siteName: "Allcare Pharmacy",
+    name: "Chanel Chance Eau De Parfum 50ml",
+    price: 95,
+    currency: "EUR"
+  }, {
+    site: allcare,
+    runId: "test",
+    sourceCategoryUrl: "https://www.allcarepharmacy.ie/fragrances/womens-fragrances"
+  });
+
+  const report = buildCatalogReport({
+    runId: "test",
+    startedAt: "2026-06-28T00:00:00.000Z",
+    finishedAt: "2026-06-28T00:00:01.000Z",
+    sites: [mccauley, allcare],
+    siteReports: [],
+    items: [men, women]
+  });
+
+  assert.equal(men.audience, "men");
+  assert.equal(women.audience, "women");
+  assert.equal(report.summary.audienceCounts.men, 1);
+  assert.equal(report.summary.audienceCounts.women, 1);
+  assert.deepEqual(new Set(report.perfumes.map((perfume) => perfume.audience)), new Set(["men", "women"]));
+});
+
 test("price history stores retailer price points by perfume", () => {
   const site = getAllowedSite("https://www.mccauley.ie/");
   const item = normalizeCatalogItem({
@@ -222,7 +271,7 @@ test("price history stores retailer price points by perfume", () => {
     name: "Burberry Hero Eau De Parfum 50ml",
     price: 88.2,
     currency: "EUR"
-  }, { site, runId: "test" });
+  }, { site, runId: "test", sourceCategoryUrl: "https://www.mccauley.ie/fragrances/mens-fragrances" });
 
   const report = buildCatalogReport({
     runId: "test",
@@ -237,8 +286,10 @@ test("price history stores retailer price points by perfume", () => {
   assert.equal(history.runs.length, 1);
   assert.equal(history.products.length, 1);
   assert.equal(history.products[0].productKey, item.productKey);
+  assert.equal(history.products[0].audience, "men");
   assert.equal(history.products[0].retailers[0].siteName, "McCauley Pharmacy");
   assert.equal(history.products[0].retailers[0].points[0].price, 88.2);
+  assert.equal(history.products[0].retailers[0].points[0].audience, "men");
 });
 
 test("money parsing handles euro text and comma decimals", () => {
