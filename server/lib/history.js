@@ -44,6 +44,7 @@ export function mergeCatalogIntoHistory(history, report, options = {}) {
       normalizedName: perfume.normalizedName,
       volumeMl: perfume.volumeMl,
       productFormat: perfume.productFormat,
+      audience: perfume.audience || "unknown",
       image: perfume.image || "",
       retailers: []
     };
@@ -53,6 +54,7 @@ export function mergeCatalogIntoHistory(history, report, options = {}) {
     product.normalizedName = perfume.normalizedName || product.normalizedName;
     product.volumeMl = perfume.volumeMl ?? product.volumeMl ?? null;
     product.productFormat = perfume.productFormat || product.productFormat;
+    product.audience = perfume.audience || product.audience || "unknown";
     product.image = perfume.image || product.image || "";
 
     const retailersByKey = new Map(product.retailers.map((retailer) => [retailer.siteKey, retailer]));
@@ -72,6 +74,7 @@ export function mergeCatalogIntoHistory(history, report, options = {}) {
         priceText: offer.priceText || formatEuro(offer.price),
         pricePer100ml: offer.pricePer100ml == null ? null : roundMoney(offer.pricePer100ml),
         title: offer.title || perfume.title,
+        audience: offer.audience || perfume.audience || product.audience || "unknown",
         image: offer.image || perfume.image || "",
         productUrl: offer.productUrl || ""
       });
@@ -118,6 +121,7 @@ function normalizeProductHistory(product) {
     normalizedName: product.normalizedName || "",
     volumeMl: product.volumeMl ?? null,
     productFormat: product.productFormat || "format-unknown",
+    audience: product.audience || "unknown",
     image: product.image || "",
     retailers: Array.isArray(product.retailers) ? product.retailers.map(normalizeRetailerHistory) : []
   };
@@ -136,6 +140,7 @@ function normalizeRetailerHistory(retailer) {
           priceText: point.priceText || formatEuro(point.price),
           pricePer100ml: point.pricePer100ml == null ? null : roundMoney(point.pricePer100ml),
           title: point.title || "",
+          audience: point.audience || "unknown",
           image: point.image || "",
           productUrl: point.productUrl || ""
         }))
