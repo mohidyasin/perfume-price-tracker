@@ -16,6 +16,7 @@ console.log(JSON.stringify({
   includes: [
     "public app",
     "data/catalog-latest.json",
-    "data/price-history.json"
+    "data/price-history.json",
+    "data/perfume-prices.sqlite"
   ]
 }, null, 2));
